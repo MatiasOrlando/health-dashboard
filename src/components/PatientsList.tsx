@@ -83,7 +83,7 @@ export function PatientsList() {
         </button>
       </div>
 
-      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+      <div className="card" style={{ padding: 0, overflow: "auto" }}>
         {isLoading ? (
           <div style={{ padding: "1.5rem" }}>Loading...</div>
         ) : filtered.length === 0 ? (

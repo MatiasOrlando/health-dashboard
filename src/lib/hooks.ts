@@ -39,7 +39,18 @@ export function useUpdatePatient() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<Patient> }) =>
       api.updatePatient(id, data),
-    onSuccess: (_, { id }) => {
+    onMutate: async ({ id, data }) => {
+      await qc.cancelQueries({ queryKey: queryKeys.patients });
+      const previous = qc.getQueryData(queryKeys.patients);
+      qc.setQueryData(queryKeys.patients, (old: Patient[]) =>
+        old.map((p) => (p.id === id ? { ...p, ...data } : p))
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      qc.setQueryData(queryKeys.patients, context?.previous);
+    },
+    onSettled: (_, __, { id }) => {
       qc.invalidateQueries({ queryKey: queryKeys.patients });
       qc.invalidateQueries({ queryKey: queryKeys.patient(id) });
     },
@@ -50,7 +61,20 @@ export function useDeletePatient() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.deletePatient(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.patients }),
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: queryKeys.patients });
+      const previous = qc.getQueryData(queryKeys.patients);
+      qc.setQueryData(queryKeys.patients, (old: Patient[]) =>
+        old.filter((p) => p.id !== id)
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      qc.setQueryData(queryKeys.patients, context?.previous);
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.patients });
+    },
   });
 }
 
@@ -76,17 +100,22 @@ export function useCreateNote() {
 export function useUpdateNote() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      patientId,
-      data,
-    }: {
-      id: string;
-      patientId: string;
-      data: Partial<Note>;
-    }) => api.updateNote(id, data),
-    onSuccess: (_, { patientId }) =>
-      qc.invalidateQueries({ queryKey: queryKeys.notes(patientId) }),
+    mutationFn: ({ id, patientId, data }: { id: string; patientId: string; data: Partial<Note> }) =>
+      api.updateNote(id, data),
+    onMutate: async ({ id, patientId, data }) => {
+      await qc.cancelQueries({ queryKey: queryKeys.notes(patientId) });
+      const previous = qc.getQueryData(queryKeys.notes(patientId));
+      qc.setQueryData(queryKeys.notes(patientId), (old: Note[]) =>
+        old.map((n) => (n.id === id ? { ...n, ...data } : n))
+      );
+      return { previous };
+    },
+    onError: (_err, { patientId }, context) => {
+      qc.setQueryData(queryKeys.notes(patientId), context?.previous);
+    },
+    onSettled: (_, __, { patientId }) => {
+      qc.invalidateQueries({ queryKey: queryKeys.notes(patientId) });
+    },
   });
 }
 
@@ -95,7 +124,19 @@ export function useDeleteNote() {
   return useMutation({
     mutationFn: ({ id, patientId }: { id: string; patientId: string }) =>
       api.deleteNote(id),
-    onSuccess: (_, { patientId }) =>
-      qc.invalidateQueries({ queryKey: queryKeys.notes(patientId) }),
+    onMutate: async ({ id, patientId }) => {
+      await qc.cancelQueries({ queryKey: queryKeys.notes(patientId) });
+      const previous = qc.getQueryData(queryKeys.notes(patientId));
+      qc.setQueryData(queryKeys.notes(patientId), (old: Note[]) =>
+        old.filter((n) => n.id !== id)
+      );
+      return { previous };
+    },
+    onError: (_err, { patientId }, context) => {
+      qc.setQueryData(queryKeys.notes(patientId), context?.previous);
+    },
+    onSettled: (_, __, { patientId }) => {
+      qc.invalidateQueries({ queryKey: queryKeys.notes(patientId) });
+    },
   });
 }

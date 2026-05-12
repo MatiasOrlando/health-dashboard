@@ -7,6 +7,7 @@ import { Note } from "@/lib/types";
 import { useState } from "react";
 import { NoteModal } from "./NoteModal";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { PatientDetailSkeleton } from "./PatientsListSkeleton";
 
 function initials(name: string) {
   return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
@@ -29,7 +30,7 @@ export function PatientDetail({ id }: Props) {
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null);
 
-  if (loadingPatient) return <div>Loading...</div>;
+  if (loadingPatient) return <PatientDetailSkeleton />;
   if (!patient) return <div>Patient not found.</div>;
 
   return (

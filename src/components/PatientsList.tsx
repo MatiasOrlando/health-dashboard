@@ -10,6 +10,8 @@ import {
 import { Patient } from "@/lib/types";
 import { PatientModal } from "./PatientModal";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { PatientsListSkeleton } from "./PatientsListSkeleton";
+
 
 function initials(name: string) {
   return name
@@ -85,7 +87,7 @@ export function PatientsList() {
 
       <div className="card" style={{ padding: 0, overflow: "auto" }}>
         {isLoading ? (
-          <div style={{ padding: "1.5rem" }}>Loading...</div>
+          <PatientsListSkeleton />
         ) : filtered.length === 0 ? (
           <div className="empty-state">
             <Users size={28} />

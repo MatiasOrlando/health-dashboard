@@ -119,7 +119,7 @@ let notes: Note[] = [
 export const api = {
   // Patients
   async getPatients(): Promise<Patient[]> {
-    await delay(3000);
+    await delay(150);
     return [...patients];
   },
 

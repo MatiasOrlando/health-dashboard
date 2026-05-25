@@ -1,6 +1,6 @@
 # Health Coach Dashboard
 
-A patient management dashboard built for health coaches. Full-stack Next.js application with real-time data management, optimistic updates, and a clean, accessible UI.
+A patient management dashboard built for health coaches. Full-stack Next.js application with real-time data management, optimistic updates, and a clean accessible UI.
 
 ## Features
 
